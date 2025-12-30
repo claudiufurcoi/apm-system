@@ -243,7 +243,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=applepay
 ## 📚 Related Documentation
 
 - [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Quick start guide
-- [REFACTORING_SUMMARY.md](REFACTORING_SUMMARY.md) - What changed and why
 - [MULTI_PROVIDER_GUIDE.md](MULTI_PROVIDER_GUIDE.md) - Comprehensive guide
 - [mock_guide.md](mock_guide.md) - Mock service guide
 - [quick_start_mock.md](quick_start_mock.md) - Mock quick start
