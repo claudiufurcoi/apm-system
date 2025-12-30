@@ -1,0 +1,33 @@
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# Application Configuration
+spring:
+  application:
+    name: apm-service
+
+# PayPal Configuration
+paypal:
+  # Mode: 'sandbox' for testing, 'live' for production
+  mode: sandbox
+
+  # Get these from PayPal Developer Dashboard (https://developer.paypal.com/)
+  client-id: ${PAYPAL_CLIENT_ID:your-client-id-here}
+  client-secret: ${PAYPAL_CLIENT_SECRET:your-client-secret-here}
+
+  # Callback URLs - Update these for your environment
+  return-url: http://localhost:8080/api/payment/success
+  cancel-url: http://localhost:8080/api/payment/cancel
+
+# Logging Configuration
+logging:
+  level:
+    com.apm.poc: DEBUG
+    com.paypal: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+

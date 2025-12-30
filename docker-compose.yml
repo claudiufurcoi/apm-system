@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # APM Application with Mock Service (Default - No credentials needed)
+  apm-mock:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apm-mock
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=mock
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/payment/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - apm-network
+    labels:
+      - "com.apm.service=mock"
+      - "com.apm.description=APM Payment Service (Mock Mode)"
+
+  # APM Application with PayPal Service (Production)
+  # Uncomment and configure when you have PayPal credentials
+  # apm-paypal:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: apm-paypal
+  #   ports:
+  #     - "8081:8080"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=prod
+  #     - PAYPAL_MODE=sandbox
+  #     - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+  #     - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+  #     - JAVA_OPTS=-Xms256m -Xmx512m
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/payment/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+  #   restart: unless-stopped
+  #   networks:
+  #     - apm-network
+  #   labels:
+  #     - "com.apm.service=paypal"
+  #     - "com.apm.description=APM Payment Service (PayPal Production)"
+
+  # APM Application with Apple Pay Service
+  # Uncomment and configure when you have Apple Pay credentials
+  # apm-applepay:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: apm-applepay
+  #   ports:
+  #     - "8082:8080"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=applepay
+  #     - APPLEPAY_MERCHANT_ID=${APPLEPAY_MERCHANT_ID}
+  #     - JAVA_OPTS=-Xms256m -Xmx512m
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/payment/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+  #   restart: unless-stopped
+  #   networks:
+  #     - apm-network
+  #   labels:
+  #     - "com.apm.service=applepay"
+  #     - "com.apm.description=APM Payment Service (Apple Pay)"
+
+  # APM Application with Mock Apple Pay Service (No credentials needed!)
+  apm-mock-applepay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apm-mock-applepay
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=mock-applepay
+      - JAVA_OPTS=-Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/payment/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - apm-network
+    labels:
+      - "com.apm.service=mock-applepay"
+      - "com.apm.description=APM Payment Service (Mock Apple Pay - No Credentials Needed)"
+
+networks:
+  apm-network:
+    driver: bridge
+    name: apm-network
+

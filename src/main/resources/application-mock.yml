@@ -1,0 +1,32 @@
+# Mock Profile Configuration
+# Use this profile when you don't have PayPal credentials
+# Activate with: --spring.profiles.active=mock or SPRING_PROFILES_ACTIVE=mock
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# Application Configuration
+spring:
+  application:
+    name: apm-service
+
+# PayPal Configuration (Mock - these values won't be used)
+paypal:
+  mode: sandbox
+  client-id: mock-client-id
+  client-secret: mock-client-secret
+  return-url: http://localhost:8080/api/payment/success
+  cancel-url: http://localhost:8080/api/payment/cancel
+
+# Logging Configuration
+logging:
+  level:
+    com.apm.poc: DEBUG
+    com.paypal: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+

@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: apm
+
+server:
+  port: 8080
+
+# Apple Pay Configuration
+applepay:
+  merchant-id: merchant.com.example.apm
+  merchant-name: APM Payment Demo
+  country-code: US
+  currency-code: USD
+  return-url: http://localhost:8080/api/payment/success
+  cancel-url: http://localhost:8080/api/payment/cancel
+
+  # Apple Pay certificate configuration (for production)
+  # certificate-path: /path/to/merchant_id.cer
+  # certificate-password: your-certificate-password
+
+  # Payment processing endpoint (typically Stripe, Braintree, or similar)
+  # processor-endpoint: https://api.stripe.com/v1/tokens
+  # processor-api-key: ${APPLEPAY_PROCESSOR_API_KEY}
+
+# Logging
+logging:
+  level:
+    com.apm.poc: DEBUG
+    org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Actuator endpoints (for health checks)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+

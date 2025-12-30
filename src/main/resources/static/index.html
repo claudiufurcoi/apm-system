@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APM Payment Gateway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            padding: 60px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1d1d1f;
+            font-size: 42px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #86868b;
+            font-size: 18px;
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .payment-card {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .payment-card:hover::before {
+            opacity: 1;
+        }
+
+        .payment-card.paypal {
+            background: linear-gradient(135deg, #0070ba 0%, #1546a0 100%);
+            color: white;
+        }
+
+        .payment-card.applepay {
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            color: white;
+        }
+
+        .payment-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .payment-card:nth-child(2) .payment-icon {
+            animation-delay: 0.5s;
+        }
+
+        .payment-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .payment-description {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .payment-card.paypal .payment-description,
+        .payment-card.applepay .payment-description {
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ff9500;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .features {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .features h3 {
+            color: #1d1d1f;
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features ul {
+            list-style: none;
+        }
+
+        .features li {
+            color: #86868b;
+            padding: 12px 0;
+            border-bottom: 1px solid #d2d2d7;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .features li:last-child {
+            border-bottom: none;
+        }
+
+        .features li::before {
+            content: '✓';
+            color: #34c759;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #d2d2d7;
+            color: #86868b;
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #0071e3;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 APM Payment Gateway</h1>
+        <p class="subtitle">Choose your preferred payment method</p>
+
+        <div class="payment-options">
+            <a href="/payment.html" style="text-decoration: none; color: inherit;">
+                <div class="payment-card paypal">
+                    <span class="badge">Mock Mode</span>
+                    <span class="payment-icon">💳</span>
+                    <div class="payment-title">PayPal</div>
+                    <div class="payment-description">
+                        Fast and secure payment processing with PayPal.
+                        Accepted worldwide with buyer protection.
+                    </div>
+                </div>
+            </a>
+
+            <a href="/applepay.html" style="text-decoration: none; color: inherit;">
+                <div class="payment-card applepay">
+                    <span class="badge">Mock Mode</span>
+                    <span class="payment-icon">🍎</span>
+                    <div class="payment-title">Apple Pay</div>
+                    <div class="payment-description">
+                        Pay with Face ID or Touch ID. Fast, secure,
+                        and private checkout experience.
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="features">
+            <h3>✨ Features</h3>
+            <ul>
+                <li>No real credentials required - Mock services for testing</li>
+                <li>Complete payment flow simulation</li>
+                <li>RESTful API integration examples</li>
+                <li>Responsive design for all devices</li>
+                <li>Detailed logging and error handling</li>
+                <li>Docker-ready deployment</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>
+                <strong>Development Mode:</strong> These are mock payment services for testing.<br>
+                No real payment will be processed. Perfect for integration testing!
+            </p>
+            <p style="margin-top: 15px;">
+                <a href="http://localhost:8080/api/payment/health" target="_blank">PayPal Health Check</a> |
+                <a href="http://localhost:8082/api/payment/health" target="_blank">Apple Pay Health Check</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add ripple effect on card click
+        document.querySelectorAll('.payment-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.5);
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
+
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = e.clientX - rect.left - size/2 + 'px';
+                ripple.style.top = e.clientY - rect.top - size/2 + 'px';
+
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(2);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+

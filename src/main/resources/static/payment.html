@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APM Payment Test Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .paypal-btn {
+            background: #0070ba;
+            color: white;
+        }
+
+        .paypal-btn:hover {
+            background: #005a94;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 112, 186, 0.3);
+        }
+
+        .paypal-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Payment Page</h1>
+        <p class="subtitle">Test PayPal Integration</p>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required
+                       placeholder="your@email.com" value="test@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <input type="text" id="description" name="description" required
+                       placeholder="What are you paying for?" value="Test Product Purchase">
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="amount">Amount *</label>
+                    <input type="number" id="amount" name="amount" required
+                           step="0.01" min="0.01" placeholder="0.00" value="10.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Currency *</label>
+                    <select id="currency" name="currency" required>
+                        <option value="USD" selected>USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="CAD">CAD - Canadian Dollar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="orderId">Order ID (Optional)</label>
+                <input type="text" id="orderId" name="orderId"
+                       placeholder="ORDER-123">
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="paypal-btn" id="payButton">
+                    Pay with PayPal
+                </button>
+            </div>
+        </form>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api/payment';
+
+        const form = document.getElementById('paymentForm');
+        const payButton = document.getElementById('payButton');
+        const statusDiv = document.getElementById('status');
+
+        // Check if returning from PayPal
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentId = urlParams.get('paymentId');
+            const payerId = urlParams.get('PayerID');
+
+            if (paymentId && payerId) {
+                // User returned from PayPal, execute payment
+                executePayment(paymentId, payerId);
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                userEmail: document.getElementById('email').value,
+                description: document.getElementById('description').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                currency: document.getElementById('currency').value,
+                orderId: document.getElementById('orderId').value || `ORDER-${Date.now()}`
+            };
+
+            try {
+                showStatus('Creating payment...', 'info');
+                payButton.disabled = true;
+                payButton.innerHTML = '<span class="loading"></span> Processing...';
+
+                const response = await fetch(`${API_BASE_URL}/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.approvalUrl) {
+                    showStatus('Redirecting to PayPal...', 'success');
+                    setTimeout(() => {
+                        window.location.href = result.approvalUrl;
+                    }, 1000);
+                } else {
+                    throw new Error(result.message || 'Payment creation failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('Error: ' + error.message, 'error');
+                payButton.disabled = false;
+                payButton.innerHTML = 'Pay with PayPal';
+            }
+        });
+
+        async function executePayment(paymentId, payerId) {
+            try {
+                showStatus('Completing payment...', 'info');
+
+                const response = await fetch(`${API_BASE_URL}/success?paymentId=${paymentId}&PayerID=${payerId}`);
+                const result = await response.json();
+
+                if (response.ok && result.status === 'approved') {
+                    showStatus('✓ Payment completed successfully! Payment ID: ' + result.paymentId, 'success');
+                } else {
+                    throw new Error(result.message || 'Payment execution failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('Error: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+            statusDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+

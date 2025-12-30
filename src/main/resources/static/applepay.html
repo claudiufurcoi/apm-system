@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Pay - APM Payment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #434343 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            padding: 50px;
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .apple-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 40px;
+            opacity: 0.1;
+        }
+
+        h1 {
+            color: #1d1d1f;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 .emoji {
+            font-size: 36px;
+        }
+
+        .subtitle {
+            color: #86868b;
+            margin-bottom: 35px;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1d1d1f;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #fbfbfd;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #0071e3;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input-group .form-group {
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 35px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .applepay-btn {
+            background: #000;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .applepay-btn:hover {
+            background: #1d1d1f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .applepay-btn:active {
+            transform: translateY(0);
+        }
+
+        .applepay-btn:disabled {
+            background: #86868b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .applepay-logo {
+            height: 22px;
+            filter: brightness(0) invert(1);
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #ff9500;
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            margin-top: 25px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: none;
+            font-size: 15px;
+        }
+
+        .status.success {
+            background: #d1f2eb;
+            color: #0c5145;
+            border: 1.5px solid #34c759;
+        }
+
+        .status.error {
+            background: #ffe5e5;
+            color: #c41e3a;
+            border: 1.5px solid #ff3b30;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #0071e3;
+            border: 1.5px solid #0071e3;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #86868b;
+            border: 1px solid #d2d2d7;
+        }
+
+        .info-box strong {
+            color: #1d1d1f;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .payment-details {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .payment-details h3 {
+            color: #1d1d1f;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 16px;
+            padding-top: 15px;
+        }
+
+        .detail-label {
+            color: #86868b;
+        }
+
+        .detail-value {
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="apple-logo">🍎</div>
+
+        <div class="mode-badge">🎭 MOCK MODE - No Real Charges</div>
+
+        <h1>
+            <span class="emoji">🍎</span>
+            Apple Pay
+        </h1>
+        <p class="subtitle">Fast, secure, and private checkout</p>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required
+                       placeholder="your@email.com" value="test@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <input type="text" id="description" name="description" required
+                       placeholder="What are you purchasing?" value="iPhone 15 Pro">
+            </div>
+
+            <div class="input-group">
+                <div class="form-group">
+                    <label for="amount">Amount *</label>
+                    <input type="number" id="amount" name="amount" required
+                           step="0.01" min="0.01" placeholder="0.00" value="99.99">
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Currency *</label>
+                    <select id="currency" name="currency" required>
+                        <option value="USD" selected>USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="CAD">CAD - Canadian Dollar</option>
+                        <option value="AUD">AUD - Australian Dollar</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="orderId">Order ID (Optional)</label>
+                <input type="text" id="orderId" name="orderId"
+                       placeholder="ORDER-123" value="">
+            </div>
+
+            <div class="payment-details" id="paymentSummary">
+                <h3>Payment Summary</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Item</span>
+                    <span class="detail-value" id="summaryItem">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total</span>
+                    <span class="detail-value" id="summaryTotal">-</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="applepay-btn" id="applePayButton">
+                    <svg width="50" height="20" viewBox="0 0 50 20" class="applepay-logo">
+                        <path fill="currentColor" d="M9.5 7.5c-.4.4-.9.6-1.5.6-.1 0-.1-.1-.1-.2 0-.5.2-1 .5-1.4.4-.4.9-.7 1.5-.6.1 0 .1.1.1.2 0 .5-.2 1-.5 1.4zm.4 1c-.8 0-1.4.4-1.8.4-.4 0-1-.4-1.7-.4-1.3 0-2.5.7-3.1 1.9-.7 1.2-.9 3.4.1 5.3.5.9 1.1 2 2 2 .8 0 1-.5 1.9-.5.9 0 1 .5 1.8.5.9 0 1.5-1 2-2 .6-1 .8-2 .8-2.1 0 0-1.6-.6-1.6-2.4 0-1.5 1.2-2.2 1.3-2.3-.7-1-1.8-1.1-2.2-1.1-.2-.1-.3-.1-.5-.3z"/>
+                        <text x="15" y="15" font-size="10" fill="currentColor" font-weight="500">Pay</text>
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div id="status" class="status"></div>
+
+        <div class="info-box">
+            <strong>🎭 Mock Mode Active</strong>
+            This is a simulated Apple Pay experience. No real payment will be processed.
+            Perfect for testing your integration without Apple Developer credentials.
+        </div>
+    </div>
+
+    <script>
+        // Use port 8082 for mock Apple Pay service
+        const API_BASE_URL = 'http://localhost:8082/api/payment';
+
+        const form = document.getElementById('paymentForm');
+        const applePayButton = document.getElementById('applePayButton');
+        const statusDiv = document.getElementById('status');
+        const paymentSummary = document.getElementById('paymentSummary');
+
+        // Update payment summary when form changes
+        form.addEventListener('input', updatePaymentSummary);
+
+        function updatePaymentSummary() {
+            const description = document.getElementById('description').value || '-';
+            const amount = document.getElementById('amount').value || '0.00';
+            const currency = document.getElementById('currency').value;
+
+            document.getElementById('summaryItem').textContent = description;
+            document.getElementById('summaryTotal').textContent = `${currency} ${parseFloat(amount).toFixed(2)}`;
+
+            if (amount > 0) {
+                paymentSummary.style.display = 'block';
+            }
+        }
+
+        // Check if returning from Apple Pay approval
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePaymentSummary();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentId = urlParams.get('paymentId');
+            const payerId = urlParams.get('PayerID');
+
+            if (paymentId && payerId) {
+                // User returned from Apple Pay, execute payment
+                executePayment(paymentId, payerId);
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                userEmail: document.getElementById('email').value,
+                description: document.getElementById('description').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                currency: document.getElementById('currency').value,
+                orderId: document.getElementById('orderId').value || `ORDER-AP-${Date.now()}`
+            };
+
+            try {
+                showStatus('🍎 Initializing Apple Pay...', 'info');
+                applePayButton.disabled = true;
+                applePayButton.innerHTML = '<span class="loading"></span> Processing...';
+
+                const response = await fetch(`${API_BASE_URL}/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.approvalUrl) {
+                    showStatus('🍎 Apple Pay session created! Redirecting...', 'success');
+
+                    // In mock mode, show instructions
+                    setTimeout(() => {
+                        if (result.paymentId.startsWith('AP-MOCK-')) {
+                            showMockInstructions(result.paymentId);
+                        } else {
+                            window.location.href = result.approvalUrl;
+                        }
+                    }, 1000);
+                } else {
+                    throw new Error(result.message || 'Payment creation failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ Error: ' + error.message, 'error');
+                applePayButton.disabled = false;
+                applePayButton.innerHTML = `
+                    <svg width="50" height="20" viewBox="0 0 50 20" class="applepay-logo">
+                        <path fill="currentColor" d="M9.5 7.5c-.4.4-.9.6-1.5.6-.1 0-.1-.1-.1-.2 0-.5.2-1 .5-1.4.4-.4.9-.7 1.5-.6.1 0 .1.1.1.2 0 .5-.2 1-.5 1.4zm.4 1c-.8 0-1.4.4-1.8.4-.4 0-1-.4-1.7-.4-1.3 0-2.5.7-3.1 1.9-.7 1.2-.9 3.4.1 5.3.5.9 1.1 2 2 2 .8 0 1-.5 1.9-.5.9 0 1 .5 1.8.5.9 0 1.5-1 2-2 .6-1 .8-2 .8-2.1 0 0-1.6-.6-1.6-2.4 0-1.5 1.2-2.2 1.3-2.3-.7-1-1.8-1.1-2.2-1.1-.2-.1-.3-.1-.5-.3z"/>
+                        <text x="15" y="15" font-size="10" fill="currentColor" font-weight="500">Pay</text>
+                    </svg>
+                `;
+            }
+        });
+
+        function showMockInstructions(paymentId) {
+            const instructions = `
+                <div style="text-align: left; line-height: 1.6;">
+                    <strong style="display: block; margin-bottom: 10px;">🎭 Mock Payment Created!</strong>
+                    <p style="margin-bottom: 10px;">Payment ID: <code style="background: #f5f5f7; padding: 2px 6px; border-radius: 4px;">${paymentId}</code></p>
+                    <p style="margin-bottom: 10px;">In a real Apple Pay flow, you would see the payment sheet here.</p>
+                    <p style="margin-bottom: 15px;">To complete the mock payment, click below:</p>
+                    <button onclick="executePayment('${paymentId}', 'MOCK-AP-PAYER-123')"
+                            style="background: #34c759; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        ✓ Approve Mock Payment
+                    </button>
+                </div>
+            `;
+            showStatus(instructions, 'info');
+        }
+
+        async function executePayment(paymentId, payerId) {
+            try {
+                showStatus('🍎 Completing Apple Pay transaction...', 'info');
+
+                const response = await fetch(`${API_BASE_URL}/success?paymentId=${paymentId}&PayerID=${payerId}`);
+                const result = await response.json();
+
+                if (response.ok && result.status === 'approved') {
+                    showStatus(`✓ Payment completed successfully!<br><br>
+                               <strong>Payment ID:</strong> ${result.paymentId}<br>
+                               <strong>Status:</strong> ${result.status}<br><br>
+                               <em>Thank you for your purchase!</em>`, 'success');
+
+                    // Reset form after successful payment
+                    setTimeout(() => {
+                        form.reset();
+                        paymentSummary.style.display = 'none';
+                        applePayButton.disabled = false;
+                        applePayButton.innerHTML = `
+                            <svg width="50" height="20" viewBox="0 0 50 20" class="applepay-logo">
+                                <path fill="currentColor" d="M9.5 7.5c-.4.4-.9.6-1.5.6-.1 0-.1-.1-.1-.2 0-.5.2-1 .5-1.4.4-.4.9-.7 1.5-.6.1 0 .1.1.1.2 0 .5-.2 1-.5 1.4zm.4 1c-.8 0-1.4.4-1.8.4-.4 0-1-.4-1.7-.4-1.3 0-2.5.7-3.1 1.9-.7 1.2-.9 3.4.1 5.3.5.9 1.1 2 2 2 .8 0 1-.5 1.9-.5.9 0 1 .5 1.8.5.9 0 1.5-1 2-2 .6-1 .8-2 .8-2.1 0 0-1.6-.6-1.6-2.4 0-1.5 1.2-2.2 1.3-2.3-.7-1-1.8-1.1-2.2-1.1-.2-.1-.3-.1-.5-.3z"/>
+                                <text x="15" y="15" font-size="10" fill="currentColor" font-weight="500">Pay</text>
+                            </svg>
+                        `;
+                    }, 3000);
+                } else {
+                    throw new Error(result.message || 'Payment execution failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('❌ Error: ' + error.message, 'error');
+                applePayButton.disabled = false;
+            }
+        }
+
+        function showStatus(message, type) {
+            statusDiv.innerHTML = message;
+            statusDiv.className = 'status ' + type;
+            statusDiv.style.display = 'block';
+        }
+
+        // Make executePayment available globally for the mock button
+        window.executePayment = executePayment;
+    </script>
+</body>
+</html>
+
