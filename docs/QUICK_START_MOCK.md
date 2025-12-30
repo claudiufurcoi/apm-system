@@ -62,8 +62,8 @@ You'll get:
 
 ## 📖 Need More Info?
 
-- Full details: [MOCK_MODE_GUIDE.md](mock_guide.md)
-- Real PayPal setup: [README.md](README.md)
+- Full details: [MOCK_MODE_GUIDE.md](MOCK_GUIDE.md)
+- Real PayPal setup: [README.md](../README.md)
 
 ## 🔄 Switch to Real PayPal
 

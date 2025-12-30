@@ -280,7 +280,7 @@ After developing with Mock Mode:
 ## Support
 
 For questions or issues with Mock Mode:
-- Check the main [README.md](README.md)
+- Check the main [README.md](../README.md)
 - Review the source code in `MockPayPalService.java`
 - Enable debug logging: `logging.level.com.apm.poc: DEBUG`
 

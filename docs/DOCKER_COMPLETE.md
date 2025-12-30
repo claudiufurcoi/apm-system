@@ -189,12 +189,13 @@ JAVA_OPTS=-Xms256m -Xmx512m
 ## 🎓 Understanding the Dockerfile
 
 ### Stage 1: Build
+
 ```dockerfile
 FROM maven:3.8.6-eclipse-temurin-11 AS build
 WORKDIR /app
-COPY pom.xml .
+COPY ../pom.xml .
 RUN mvn dependency:go-offline -B    # Download deps (cached)
-COPY src ./src
+COPY ../src ./src
 RUN mvn clean package -DskipTests   # Build JAR
 ```
 
@@ -290,8 +291,7 @@ environment:
 ## 📚 Documentation Structure
 
 ```
-apm/
-├── DOCKER_QUICKSTART.md       ← Start here! Quick reference
+apm/docs
 ├── DOCKER_GUIDE.md            ← Complete guide (advanced)
 ├── README.md                  ← Updated with Docker instructions
 ├── Dockerfile                 ← Build configuration

@@ -360,6 +360,7 @@ open http://localhost:8080/
 ## 📚 Documentation
 
 - **Complete Guide**: `HTML_PAGES_GUIDE.md`
+- **Payment Flow Diagram**: `PAYMENT_FLOW_DIAGRAM.md` ⭐ **NEW!**
 - **Mock Apple Pay**: `MOCK_APPLEPAY_GUIDE.md`
 - **Main README**: `README.md`
 

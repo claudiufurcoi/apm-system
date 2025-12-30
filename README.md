@@ -242,13 +242,13 @@ mvn spring-boot:run -Dspring-boot.run.profiles=applepay
 
 ## 📚 Related Documentation
 
-- [QUICK REFERENCE.md](quick_reference.md) - Quick start guide
-- [QUICK START.md](quick_start_mock.md) - Mock quick start
-- [MULTI-PROVIDER GUIDE.md](MULTI_PROVIDER_GUIDE.md) - Comprehensive guide
-- [PAYPAL MOCKED INTEGRATION GUIDE.md](mock_guide.md) - Paypal mock guide
-- [APPLE PAY MOCKED INTEGRATION GUIDE.md](applepay_summary.md) - ApplePay mock guide
-- [Pages Guide](pages_guide.md) - Frontend integration guide
-- [Pages Flow Guide](pages_complete.md) - Pages flow guide
+- [QUICK REFERENCE.md](docs/QUICK_REFERENCE.md) - Quick start guide
+- [QUICK START.md](docs/QUICK_START_MOCK.md) - Mock quick start
+- [MULTI-PROVIDER GUIDE.md](docs/MULTI_PROVIDER_GUIDE.md) - Comprehensive guide
+- [PAYPAL MOCKED INTEGRATION GUIDE.md](docs/MOCK_GUIDE.md) - Paypal mock guide
+- [APPLE PAY MOCKED INTEGRATION GUIDE.md](docs/APPLEPAY_SUMMARY.md) - ApplePay mock guide
+- [Pages Guide](docs/PAGES_GUIDE.md) - Frontend integration guide
+- [Pages Flow Guide](docs/PAGES_COMPLETE.md) - Pages flow guide
 
 ---
 
